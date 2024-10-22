@@ -4,7 +4,39 @@ format:
     revealjs:
         theme: dark
 ---
+```{r}
+```
 
-## Overall
+```{python}
 
+#| tags: [parameters]
 
+region = 'South End'
+month = 5
+```
+
+## `r reticulate::py_eval("region")` Ratings Trend
+
+```{python}
+from helpers import *
+
+listings = get_listings(region)
+reviews = get_reviews(listings)
+
+plot_average_review_score_by_month(reviews)
+
+```
+
+## Monthly Ratings
+
+```{python}
+reviews[reviews['month'] == month]['overall'].value_counts().sort_index().plot(kind='bar')
+
+```
+
+## Bad Reviews
+
+```{python}
+pd.set_option('display.max_colwidth', 1000)
+reviews[reviews['month'] == month][reviews['overall'] < 4][['comments', 'overall']]
+```
