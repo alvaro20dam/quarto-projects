@@ -16,6 +16,8 @@ In this project we have 6 months of Airbnb reviews data for the city of Boston. 
 
 In this project we have a dataset of telecom customers and their churn status. We use Quarto to generate an HTML report that includes code, output, and narrative. This report is designed to be shared with a non-technical audience.
 
+One key feature of this video is that we will quickly convert a Jupyter Notebook into the HTML report. This is a common workflow for many data scientists who are looking to share their work with a broader audience.
+
 ### Generate Dashboards with Quarto (Stock Price Analysis)
 
 In this project we see how we can use Quarto to generate dashboards. We discuss the functionality to format your dashboards and show how you can include both Python & R code in the same document.
