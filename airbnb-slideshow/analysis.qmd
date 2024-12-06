@@ -4,8 +4,6 @@ format:
     revealjs:
         theme: dark
 ---
-```{r}
-```
 
 ```{python}
 
@@ -15,7 +13,7 @@ region = 'South End'
 month = 5
 ```
 
-## `r reticulate::py_eval("region")` Ratings Trend
+## `{python} region` Ratings Trend
 
 ```{python}
 from helpers import *
@@ -37,6 +35,10 @@ reviews[reviews['month'] == month]['overall'].value_counts().sort_index().plot(k
 ## Bad Reviews
 
 ```{python}
+#| label: tbl-ohe_example
+#| tbl-cap: 'One-hot vectorization example'
+#| tbl-column: body
+
 pd.set_option('display.max_colwidth', 1000)
-reviews[reviews['month'] == month][reviews['overall'] < 4][['comments', 'overall']]
+reviews[reviews['month'] == month][reviews['overall'] < 4][['comments', 'overall']].head().values
 ```

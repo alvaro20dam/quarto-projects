@@ -3,7 +3,6 @@ title: "Rental Reviews"
 format: dashboard
 echo: false
 css: style.css
-server: shiny
 ---
 ```{python}
 # Load in Data
@@ -100,31 +99,73 @@ for idx, row in listings.iterrows():
 m
 ```
 
-# Neighborhoods
-
-## {.sidebar}
+# Back Bay
 
 ```{python}
-from shiny import reactive
-from shiny.express import render, ui
-ui.input_select("neighborhood", "Neighborhood:",
-                choices=list(listings['neighbourhood_cleansed'].unique()))
-# ui.input_select("month", "Month", choices=["hist", "kde"])
+nbrhood_df = listings[listings['neighbourhood_cleansed'] == 'Back Bay']
 
-@reactive.calc
-def neighborhood():
-    return listings[listings['neighbourhood_cleansed'] == input.neighborhood()]
+reviews_joined = reviews.merge(nbrhood_df, left_on='listing_id', right_on='id')
+nbrhood_reviews = reviews_joined
 ```
 
-
-## Column
+## Ratings
 
 ```{python}
-@render.data_frame
-def df():
-    return render.DataGrid(neighborhood()[['name', 'price', 'review_scores_rating']]
+#| content: valuebox
+#| title: "Number of Listings"
+dict(
+    icon = "house",
+    color = "secondary",
+    value = len(nbrhood_df)
+)
 ```
+
+```{python}
+#| content: valuebox
+#| title: "Number of Reviews"
+dict(
+    icon = "person",
+    color = "secondary",
+    value = len(nbrhood_reviews)
+)
+```
+
+```{python}
+#| content: valuebox
+#| title: "Average Rating"
+dict(
+    icon = "star",
+    color = "secondary",
+    value = f"{nbrhood_reviews['overall'].mean():.2f}"
+)
+```
+
 
 ## Another column
 
-Hello world
+```{python}
+#| title: "Listings in Back Bay (by Rating)"
+#| width: 100%
+
+import itables
+import itables.options as opt
+
+opt.classes = ['display', 'cell-border', 'wrap-text']
+
+sorted_df = nbrhood_df.sort_values('review_scores_rating', ascending=False).reset_index(drop=True)
+
+itables.show(sorted_df[['name', 'review_scores_rating', 'price']])
+```
+
+```{python}
+#| title: "Non 5-Star Reviews"
+#| width: 100%
+
+reviews_df = reviews.merge(nbrhood_df, left_on='listing_id', right_on='id')
+non_5_star = reviews_df[reviews_df['overall'] < 5]
+
+# non_5_star['comments'] = non_5_star['comments'].str.wrap(30)
+output_df = non_5_star[['name', 'comments', 'overall']].reset_index(drop=True)
+
+itables.show(output_df)
+```
