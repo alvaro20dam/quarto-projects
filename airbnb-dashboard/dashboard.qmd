@@ -1,0 +1,130 @@
+---
+title: "Rental Reviews"
+format: dashboard
+echo: false
+css: style.css
+server: shiny
+---
+```{python}
+# Load in Data
+import pandas as pd
+import matplotlib.pyplot as plt
+
+listings = pd.read_csv("listings.csv")
+reviews = pd.read_csv("reviews-2024.csv")
+
+COLOR = '#6C757D'
+
+```
+
+# Overview
+
+## Value Boxes
+```{python}
+#| content: valuebox
+#| title: "Number of Listings"
+dict(
+    icon = "house",
+    color = "secondary",
+    value = len(listings)
+)
+```
+
+```{python}
+#| content: valuebox
+#| title: "Number of Reviews"
+dict(
+    icon = "person",
+    color = "secondary",
+    value = len(reviews)
+)
+```
+
+```{python}
+#| content: valuebox
+#| title: "Average Rating"
+dict(
+    icon = "star",
+    color = "secondary",
+    value = f"{reviews['overall'].mean():.2f}"
+)
+```
+
+## Trends over time
+
+```{python}
+#| title: "Average Rating Over Time"
+#| echo: false
+averages = reviews.groupby(['year', 'month'])['overall'].mean().reset_index()
+plt.figure(figsize=(10, 6))
+plt.plot(averages['month'], averages['overall'], linewidth=8, color=COLOR)  # Increase line thickness
+```
+
+```{python}
+#| title: "Ratings by Type"
+ax = reviews['overall'].value_counts().sort_index().plot(kind='bar', color=COLOR)
+ax.set_ylabel('Count', fontsize=18)
+ax.set_yticklabels(ax.get_yticklabels(), fontsize=16)
+ax.set_xlabel(None)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=16)
+plt.show();
+
+```
+
+## Map of Listings
+
+```{python}
+#| title: "Map of Listings"
+import folium
+
+map_center = [listings['latitude'].mean(), listings['longitude'].mean()]
+m = folium.Map(
+    location=map_center,
+    zoom_start=12,
+    height=500
+)
+
+for idx, row in listings.iterrows():
+    tooltip = f"""
+    <h5>Name: {row['name']} <br/>
+    Rating: {row['review_scores_rating']} <br/>
+    Cost: {row['price']}/night </h5>
+    """
+    
+    _ = folium.Marker(
+        [row['latitude'], row['longitude']], 
+        tooltip=tooltip, 
+        icon=folium.Icon(color='gray', icon='plus')
+    ).add_to(m)
+
+m
+```
+
+# Neighborhoods
+
+## {.sidebar}
+
+```{python}
+from shiny import reactive
+from shiny.express import render, ui
+ui.input_select("neighborhood", "Neighborhood:",
+                choices=list(listings['neighbourhood_cleansed'].unique()))
+# ui.input_select("month", "Month", choices=["hist", "kde"])
+
+@reactive.calc
+def neighborhood():
+    return listings[listings['neighbourhood_cleansed'] == input.neighborhood()]
+```
+
+
+## Column
+
+```{python}
+@render.data_frame
+def df():
+    return render.DataGrid(neighborhood()[['name', 'price', 'review_scores_rating']]
+```
+
+## Another column
+
+Hello world
