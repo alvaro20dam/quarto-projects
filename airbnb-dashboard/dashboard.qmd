@@ -103,8 +103,6 @@ for idx, row in listings.iterrows():
 m
 ```
 
-# Details
-
 ```{python}
 #| output: False
 opt.classes = ['display', 'cell-border', 'wrap-text']
@@ -129,12 +127,13 @@ listing_details = details.drop_duplicates(subset=['Name']).reset_index(drop=True
 
 ```
 
-## Another Row
+# Listing Ratings
+
 ```{python}
 itables.show(listing_details, maxBytes=0)
 ```
 
-## Listing Details
+# Recent Reviews
 ```{python}
 output_df = reviews_joined[['Name', 'date', 'comments', 'overall']].reset_index(drop=True)
 itables.show(output_df)
