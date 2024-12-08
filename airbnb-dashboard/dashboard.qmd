@@ -3,17 +3,21 @@ title: "Rental Reviews"
 format: dashboard
 echo: false
 css: style.css
+embed-resources: true
 ---
 ```{python}
-# Load in Data
 import pandas as pd
 import matplotlib.pyplot as plt
+from shiny import render, reactive, ui
+
+import itables
+from itables import show, init_notebook_mode
+import itables.options as opt
 
 listings = pd.read_csv("listings.csv")
 reviews = pd.read_csv("reviews.csv")
 
 COLOR = '#6C757D'
-
 ```
 
 # Overview
@@ -99,82 +103,39 @@ for idx, row in listings.iterrows():
 m
 ```
 
-# Back Bay
+# Details
 
 ```{python}
-nbrhood_df = listings[listings['neighbourhood_cleansed'] == 'Back Bay']
-
-reviews_joined = reviews.merge(nbrhood_df, left_on='listing_id', right_on='id')
-nbrhood_reviews = reviews_joined
-```
-
-## Ratings
-
-```{python}
-#| content: valuebox
-#| title: "Number of Listings"
-dict(
-    icon = "house",
-    color = "secondary",
-    value = len(nbrhood_df)
-)
-```
-
-```{python}
-#| content: valuebox
-#| title: "Number of Reviews"
-dict(
-    icon = "person",
-    color = "secondary",
-    value = len(nbrhood_reviews)
-)
-```
-
-```{python}
-#| content: valuebox
-#| title: "Average Rating"
-dict(
-    icon = "star",
-    color = "secondary",
-    value = f"{nbrhood_reviews['overall'].mean():.2f}"
-)
-```
-
-
-
-
-## Another column
-
-```{python}
-#| title: "Listings in Back Bay (by Rating)"
-#| width: 100%
-
-import itables
-import itables.options as opt
-
+#| output: False
 opt.classes = ['display', 'cell-border', 'wrap-text']
 
-cols = [
-    'name', 'number_of_reviews', 'number_of_reviews_ltm', 'number_of_reviews_l30d',  'review_scores_rating', 
-    'review_scores_accuracy', 'review_scores_cleanliness', 
-    'review_scores_checkin', 'review_scores_communication', 
-    'review_scores_location',  'price'
-]
+reviews_joined = reviews.merge(listings, left_on='listing_id', right_on='id')
 
-sorted_df = nbrhood_df.sort_values('review_scores_rating', ascending=False).reset_index(drop=True)
+cols = {
+    'name': 'Name', 
+    'number_of_reviews': 'Reviews', 
+    'review_scores_rating': 'Rating', 
+    'review_scores_accuracy': 'Accuracy', 
+    'review_scores_cleanliness': 'Cleanliness', 
+    'review_scores_checkin': 'Checkin', 
+    'review_scores_communication': 'Communication', 
+    'review_scores_location': 'Location',  
+    'price': 'Price'
+}
 
-itables.show(sorted_df[cols])
+reviews_joined = reviews_joined.rename(columns=cols)
+details = reviews_joined[cols.values()]
+listing_details = details.drop_duplicates(subset=['Name']).reset_index(drop=True)
+
 ```
 
+## Another Row
 ```{python}
-#| title: "Non 5-Star Reviews"
-#| width: 100%
+itables.show(listing_details, maxBytes=0)
+```
 
-reviews_df = reviews.merge(nbrhood_df, left_on='listing_id', right_on='id')
-non_5_star = reviews_df[reviews_df['overall'] < 5]
-
-# non_5_star['comments'] = non_5_star['comments'].str.wrap(30)
-output_df = non_5_star[['name', 'comments', 'overall']].reset_index(drop=True)
-
+## Listing Details
+```{python}
+output_df = reviews_joined[['Name', 'date', 'comments', 'overall']].reset_index(drop=True)
 itables.show(output_df)
 ```
