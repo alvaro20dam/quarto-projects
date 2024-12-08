@@ -10,7 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 listings = pd.read_csv("listings.csv")
-reviews = pd.read_csv("reviews-2024.csv")
+reviews = pd.read_csv("reviews.csv")
 
 COLOR = '#6C757D'
 
