@@ -1,22 +1,20 @@
 ---
-title: "Rental Reviews"
+title: 'Rental Dashboard'
 format: dashboard
-echo: false
-embed-resources: true
 css: style.css
+embed-resources: true
 ---
+
 ```{python}
-#| context: setup
+import folium
 import pandas as pd
 import matplotlib.pyplot as plt
-from shiny import render, reactive, ui
-
 import itables
-from itables import show, init_notebook_mode
 import itables.options as opt
+from data_helpers import load_listings, load_reviews
 
-listings = pd.read_csv("listings.csv")
-reviews = pd.read_csv("reviews.csv")
+listings = load_listings()
+reviews = load_reviews()
 
 reviews_joined = reviews.merge(listings, left_on='listing_id', right_on='id')
 
@@ -25,16 +23,15 @@ COLOR = '#6C757D'
 
 # Overview
 
+## High Level Stats {height=25%}
 
-
-## Value Boxes {width=10%}
 ```{python}
 #| content: valuebox
 #| title: "Number of Listings"
 dict(
-    icon = "house",
-    color = "secondary",
-    value = len(listings)
+  icon = "house",
+  color = "secondary",
+  value = len(listings)
 )
 ```
 
@@ -42,23 +39,23 @@ dict(
 #| content: valuebox
 #| title: "Number of Reviews"
 dict(
-    icon = "person",
-    color = "secondary",
-    value = len(reviews)
+  icon = "person",
+  color = "secondary",
+  value = len(reviews)
 )
 ```
 
 ```{python}
 #| content: valuebox
-#| title: "Average Rating"
+#| title: "Average Review Rating"
 dict(
-    icon = "star",
-    color = "secondary",
-    value = f"{reviews['overall'].mean():.2f}"
+  icon = "star",
+  color = "secondary",
+  value = f"{reviews['overall'].mean():.2f}"
 )
 ```
 
-## Trends over time
+## Plots
 
 ```{python}
 import plotly.express as px
@@ -96,76 +93,51 @@ fig.show();
 ```
 
 ```{python}
-#| title: "Ratings by Type"
-ax = reviews['overall'].value_counts().sort_index().plot(kind='bar', color=COLOR)
-ax.set_ylabel('Count', fontsize=18)
-ax.set_yticklabels(ax.get_yticklabels(), fontsize=16)
-ax.set_xlabel(None)
-ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=16)
-plt.show();
-
+rating_counts = reviews['overall'].value_counts().sort_index()
+plt.bar(rating_counts.index, rating_counts.values, color=COLOR)
 ```
 
 ## Map of Listings
 
 ```{python}
-#| title: "Map of Listings"
-import folium
 
-map_center = [listings['latitude'].mean(), listings['longitude'].mean()]
-m = folium.Map(
-    location=map_center,
-    zoom_start=12,
-    height=500
-)
+# Create a map centered on a specific location
+map_center = [listings['latitude'].mean(), listings['longitude'].mean()]  # Boston
+my_map = folium.Map(location=map_center, zoom_start=12, height=500)
 
-for idx, row in listings.iterrows():
+# Add a marker to the map
+for index, row in listings.iterrows():
     tooltip = f"""
-    <h5>Name: {row['name']} <br/>
-    Rating: {row['review_scores_rating']} <br/>
-    Cost: {row['price']}/night </h5>
-    """
-    
+        <h5>Name: {row['name']} <br/>
+        Rating: {row['review_scores_rating']} <br/>
+        Cost: {row['price']}/night </h5>
+        """
+
     _ = folium.Marker(
-        [row['latitude'], row['longitude']], 
-        tooltip=tooltip, 
-        icon=folium.Icon(color='gray', icon='plus')
-    ).add_to(m)
+        location=[row['latitude'], row['longitude']],
+        tooltip=tooltip,
+        icon=folium.Icon(color='lightgray', icon='home')
+    ).add_to(my_map)
 
-m
+my_map
 ```
 
+# Listing Details
+
+## Listing Table
 ```{python}
-#| output: False
-opt.classes = ['display', 'cell-border', 'wrap-text']
+opt.classes = ['wrap-text']
 
-reviews_joined = reviews.merge(listings, left_on='listing_id', right_on='id')
+display_cols = ['name', 'review_scores_accuracy', 'review_scores_cleanliness', 'review_scores_checkin',
+               'review_scores_communication', 'review_scores_location', 'review_scores_value', 'price']
 
-cols = {
-    'name': 'Name', 
-    'number_of_reviews': 'Reviews', 
-    'review_scores_rating': 'Rating', 
-    'review_scores_accuracy': 'Accuracy', 
-    'review_scores_cleanliness': 'Cleanliness', 
-    'review_scores_checkin': 'Checkin', 
-    'review_scores_communication': 'Communication', 
-    'review_scores_location': 'Location',  
-    'price': 'Price'
-}
-
-reviews_joined = reviews_joined.rename(columns=cols)
-details = reviews_joined[cols.values()]
-listing_details = details.drop_duplicates(subset=['Name']).reset_index(drop=True)
-
-```
-
-# Listing Ratings
-
-```{python}
-itables.show(listing_details, maxBytes=0)
+itables.show(listings[display_cols])
 ```
 
 # Recent Reviews
+
+## Review Table
+
 ```{python}
 output_df = reviews_joined[['Name', 'date', 'comments', 'overall']].reset_index(drop=True)
 itables.show(output_df)
