@@ -1,0 +1,172 @@
+---
+title: "Rental Reviews"
+format: dashboard
+echo: false
+embed-resources: true
+css: style.css
+---
+```{python}
+#| context: setup
+import pandas as pd
+import matplotlib.pyplot as plt
+from shiny import render, reactive, ui
+
+import itables
+from itables import show, init_notebook_mode
+import itables.options as opt
+
+listings = pd.read_csv("listings.csv")
+reviews = pd.read_csv("reviews.csv")
+
+reviews_joined = reviews.merge(listings, left_on='listing_id', right_on='id')
+
+COLOR = '#6C757D'
+```
+
+# Overview
+
+
+
+## Value Boxes {width=10%}
+```{python}
+#| content: valuebox
+#| title: "Number of Listings"
+dict(
+    icon = "house",
+    color = "secondary",
+    value = len(listings)
+)
+```
+
+```{python}
+#| content: valuebox
+#| title: "Number of Reviews"
+dict(
+    icon = "person",
+    color = "secondary",
+    value = len(reviews)
+)
+```
+
+```{python}
+#| content: valuebox
+#| title: "Average Rating"
+dict(
+    icon = "star",
+    color = "secondary",
+    value = f"{reviews['overall'].mean():.2f}"
+)
+```
+
+## Trends over time
+
+```{python}
+import plotly.express as px
+import calendar
+
+# Calculate the average for each month across all years
+monthly_averages = reviews_joined.groupby(['month', 'neighborhood'])['overall'].mean().reset_index()
+
+# Add month names
+monthly_averages['month_name'] = monthly_averages['month'].apply(lambda x: calendar.month_abbr[x])
+
+# Create the plotly figure
+fig = px.line(
+    monthly_averages,
+    x='month_name',
+    y='overall',
+    color='neighborhood',
+    template='simple_white'
+)
+
+# Customize the figure
+fig.update_traces(
+    line_width=6
+)
+
+fig.update_layout(
+    showlegend=False,
+)
+
+# Set proper month order
+fig.update_xaxes(categoryorder='array', 
+                 categoryarray=[calendar.month_abbr[i] for i in range(1, 13)])
+
+fig.show();
+```
+
+```{python}
+#| title: "Ratings by Type"
+ax = reviews['overall'].value_counts().sort_index().plot(kind='bar', color=COLOR)
+ax.set_ylabel('Count', fontsize=18)
+ax.set_yticklabels(ax.get_yticklabels(), fontsize=16)
+ax.set_xlabel(None)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=16)
+plt.show();
+
+```
+
+## Map of Listings
+
+```{python}
+#| title: "Map of Listings"
+import folium
+
+map_center = [listings['latitude'].mean(), listings['longitude'].mean()]
+m = folium.Map(
+    location=map_center,
+    zoom_start=12,
+    height=500
+)
+
+for idx, row in listings.iterrows():
+    tooltip = f"""
+    <h5>Name: {row['name']} <br/>
+    Rating: {row['review_scores_rating']} <br/>
+    Cost: {row['price']}/night </h5>
+    """
+    
+    _ = folium.Marker(
+        [row['latitude'], row['longitude']], 
+        tooltip=tooltip, 
+        icon=folium.Icon(color='gray', icon='plus')
+    ).add_to(m)
+
+m
+```
+
+```{python}
+#| output: False
+opt.classes = ['display', 'cell-border', 'wrap-text']
+
+reviews_joined = reviews.merge(listings, left_on='listing_id', right_on='id')
+
+cols = {
+    'name': 'Name', 
+    'number_of_reviews': 'Reviews', 
+    'review_scores_rating': 'Rating', 
+    'review_scores_accuracy': 'Accuracy', 
+    'review_scores_cleanliness': 'Cleanliness', 
+    'review_scores_checkin': 'Checkin', 
+    'review_scores_communication': 'Communication', 
+    'review_scores_location': 'Location',  
+    'price': 'Price'
+}
+
+reviews_joined = reviews_joined.rename(columns=cols)
+details = reviews_joined[cols.values()]
+listing_details = details.drop_duplicates(subset=['Name']).reset_index(drop=True)
+
+```
+
+# Listing Ratings
+
+```{python}
+itables.show(listing_details, maxBytes=0)
+```
+
+# Recent Reviews
+```{python}
+output_df = reviews_joined[['Name', 'date', 'comments', 'overall']].reset_index(drop=True)
+itables.show(output_df)
+```
