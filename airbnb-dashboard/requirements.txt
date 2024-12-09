@@ -4,3 +4,4 @@ numpy
 matplotlib
 itables==2.0.0
 shiny
+faicons
