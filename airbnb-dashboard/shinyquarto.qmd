@@ -2,13 +2,14 @@
 title: "Rental Reviews"
 format: dashboard
 echo: false
-embed-resources: true
 css: style.css
+server: shiny
 ---
 ```{python}
 #| context: setup
 import pandas as pd
 import matplotlib.pyplot as plt
+from faicons import icon_svg
 from shiny import render, reactive, ui
 
 import itables
@@ -35,11 +36,6 @@ ui.input_checkbox_group(
     selected= list(reviews_joined['neighborhood'].unique())
 )
 
-@reactive.Calc
-def test():
-    df = reviews_joined[reviews_joined['neighborhood'].isin(input.neighborhood())]
-    return df
-
 
 
 ```
@@ -47,9 +43,17 @@ def test():
 
 # Overview
 
+## Value Box new
+```{python}
+ui.value_box(
+    title = "Number of Listings",
+    value = len(listings),
+    icon = 'cross',
+    color = "secondary"
+)
+```
 
-
-## Value Boxes {width=10%}
+## Value Boxes
 ```{python}
 #| content: valuebox
 #| title: "Number of Listings"
@@ -179,6 +183,41 @@ reviews_joined = reviews_joined.rename(columns=cols)
 details = reviews_joined[cols.values()]
 listing_details = details.drop_duplicates(subset=['Name']).reset_index(drop=True)
 
+```
+
+# Dynamic Page
+
+## Test
+```{python}
+@render.ui
+def text():
+    return ui.layout_column_wrap(
+    ui.value_box(
+        title = "Number of Listings",
+        value = len(listings),
+        showcase = icon_svg('house'),
+        theme = 'blue',
+    ),
+    ui.value_box(
+        title = "Number of Listings",
+        value = len(listings),
+        showcase = icon_svg('house'),
+        theme = '#AAAAAA',
+    ))
+```
+
+## Test
+```{python}
+@reactive.Calc
+def test():
+    df = reviews_joined[reviews_joined['neighborhood'].isin(input.neighborhood())]
+    return df
+
+
+@render.table
+def table():
+    df = test()
+    return df
 ```
 
 # Listing Ratings
