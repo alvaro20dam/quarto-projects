@@ -139,6 +139,6 @@ itables.show(listings[display_cols])
 ## Review Table
 
 ```{python}
-output_df = reviews_joined[['Name', 'date', 'comments', 'overall']].reset_index(drop=True)
+output_df = reviews_joined[['name', 'date', 'comments', 'overall']].reset_index(drop=True)
 itables.show(output_df)
 ```
