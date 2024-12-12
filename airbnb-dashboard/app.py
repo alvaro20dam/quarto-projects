@@ -8,6 +8,7 @@ from shiny import App, Inputs, Outputs, Session, ui
 
 import pandas as pd
 import matplotlib.pyplot as plt
+from faicons import icon_svg
 from shiny import render, reactive, ui
 
 import itables
@@ -36,17 +37,12 @@ def server(input: Inputs, output: Outputs, session: Session) -> None:
         selected= list(reviews_joined['neighborhood'].unique())
     )
 
-    @reactive.Calc
-    def test():
-        df = reviews_joined[reviews_joined['neighborhood'].isin(input.neighborhood())]
-        return df
-
 
     # ========================================================================
 
     ui.value_box(
         title = "Number of Listings",
-        value = len(reviews),
+        value = len(listings),
         icon = 'cross',
         color = "secondary"
     )
@@ -56,7 +52,7 @@ def server(input: Inputs, output: Outputs, session: Session) -> None:
     dict(
         icon = "house",
         color = "secondary",
-        value = len(reviews)
+        value = len(listings)
     )
 
     # ========================================================================
@@ -169,6 +165,37 @@ def server(input: Inputs, output: Outputs, session: Session) -> None:
 
     # ========================================================================
 
+    @render.ui
+    def text():
+        return ui.layout_column_wrap(
+        ui.value_box(
+            title = "Number of Listings",
+            value = len(listings),
+            showcase = icon_svg('house'),
+            theme = 'blue',
+        ),
+        ui.value_box(
+            title = "Number of Listings",
+            value = len(listings),
+            showcase = icon_svg('house'),
+            theme = '#AAAAAA',
+        ))
+
+    # ========================================================================
+
+    @reactive.Calc
+    def test():
+        df = reviews_joined[reviews_joined['neighborhood'].isin(input.neighborhood())]
+        return df
+
+
+    @render.table
+    def table():
+        df = test()
+        return df
+
+    # ========================================================================
+
     itables.show(listing_details, maxBytes=0)
 
     # ========================================================================
@@ -183,11 +210,11 @@ def server(input: Inputs, output: Outputs, session: Session) -> None:
     return None
 
 
-_static_assets = ["dashboard_files","airbnb-dashboard/style.css"]
+_static_assets = ["shinyquarto_files"]
 _static_assets = {"/" + sa: Path(__file__).parent / sa for sa in _static_assets}
 
 app = App(
-    Path(__file__).parent / "dashboard.html",
+    Path(__file__).parent / "shinyquarto.html",
     server,
     static_assets=_static_assets,
 )
