@@ -4,26 +4,26 @@ In this repo you will find a collection of projects that use Quarto to publish d
 
 ## Installation
 
-TODO
+<img src='https://github.com/user-attachments/assets/73dc50df-07e9-4a2f-9641-d782c5eb6bc2' width=40%/>
+
+To get started with Quarto, I recommend watching the [Quarto Crash Course](https://youtu.be/_VKxTPWDhA4?si=p5GqH8l8zi2Toog8) video posted on YouTube
 
 ## Projects
 
-### Generate Slideshow with Code (Airbnb Reviews Analysis)
+### Generate Dashboards with Python & Quarto (Airbnb Reviews Analysis)
 
-In this project we have 6 months of Airbnb reviews data for the city of Boston. We leverage the RevealJS Quarto Presentation capabilities to generate slideshows with code. This highlights how a given neighborhood in Boston has performed recently. We also see how we can easily parameterize the analysis to look at different neighborhoods.
+<img src='https://github.com/user-attachments/assets/75e3fd50-0bb2-4011-8613-5ead7487bbf9' width=40%/>
+
+In this project we have 6 months of Airbnb reviews data for the city of Boston. We create a dashboard that shows trends over time, where our airbnb properties are, and interactive tables of listings & review data. Check out the video [here](https://example.com).
 
 ### Generate HTML Reports (Telecom Churn Analysis)
+
+<img src='https://github.com/user-attachments/assets/be3bd861-8935-49c6-956d-89bee0dcd968' width=40%/>
 
 In this project we have a dataset of telecom customers and their churn status. We use Quarto to generate an HTML report that includes code, output, and narrative. This report is designed to be shared with a non-technical audience.
 
 One key feature of this video is that we will quickly convert a Jupyter Notebook into the HTML report. This is a common workflow for many data scientists who are looking to share their work with a broader audience.
 
-### Generate Dashboards with Quarto (Stock Price Analysis)
-
-In this project we see how we can use Quarto to generate dashboards. We discuss the functionality to format your dashboards and show how you can include both Python & R code in the same document.
-
-### Create Docs Website with Quarto
-
-In this project we take a toy Python library (undocumented) and show how we can add docstrings and then use Quarto & Quartopub to create a documentation website for the library. We also walk through how we can deploy this to your own custom site
+The video can be viewed [here](https://youtu.be/TS0w-tSH3Jc?si=j_8rRZref5Vfa1_D)
 
 
