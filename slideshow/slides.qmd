@@ -1,0 +1,42 @@
+---
+
+embed-resources: true
+echo: true
+---
+
+```{python}
+#| echo: false
+import pandas as pd
+import matplotlib.pyplot as plt
+
+```
+
+# Slideshows in Quarto
+
+## Add two tags for a 
+
+## Code Snippets
+
+Insert text
+
+```{.python code-line-numbers="1|2|3"}
+import pandas as pd
+
+# pd.read_csv('data.csv'))
+```
+
+## Python Visualization
+
+```{python}
+p
+
+
+# Section 2
+
+## Slide 3
+
+Insert text
+
+## Slide 4
+
+# Section 3
