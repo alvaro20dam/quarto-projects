@@ -28,36 +28,3 @@ color:
   background: dark-gray
   foreground: silver
 
-typography:
-  fonts:
-    - family: JetBrains Mono
-      source: google
-    - family: Inter
-      source: google
-  base:
-    family: Inter
-    line-height: 1.6
-  headings:
-    family: Inter
-    weight: normal
-  link:
-    color: tech-green
-  monospace:
-    family: JetBrains Mono
-    size: 1em
-
-defaults:
-  bootstrap:
-    theme-colors:
-      primary: "#00b894"
-      secondary: "#2d3436"
-    font-family-base: "Inter, system-ui"
-    font-family-monospace: "JetBrains Mono"
-  quarto:
-    format:
-      html:
-        mainfont: Inter
-        monofont: JetBrains Mono
-  shiny:
-    font-family: "Inter"
-    code-font-family: "JetBrains Mono"

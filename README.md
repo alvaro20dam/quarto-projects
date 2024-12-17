@@ -26,4 +26,14 @@ One key feature of this video is that we will quickly convert a Jupyter Notebook
 
 The video can be viewed [here](https://youtu.be/TS0w-tSH3Jc?si=j_8rRZref5Vfa1_D)
 
+### Slideshows in Quarto
+
+In this video we dive deeper into the slideshow capabilities of Quarto with Python. We adapt the demo slideshow from Quarto documentation to focus on Python based code snippets.
+
+The video can be viewed [here](https://youtu.be/TS0w-tSH3Jc?si=j_8rRZref5Vfa1_D)
+
+I recommend checking out the Quarto Demo [here](https://quarto.org/demo/)
+
+And reading the corresponding Source Code [here](https://github.com/quarto-dev/quarto-web/blob/main/docs/presentations/revealjs/demo/index.qmd)
+
 
