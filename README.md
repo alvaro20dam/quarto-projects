@@ -28,9 +28,11 @@ The video can be viewed [here](https://youtu.be/TS0w-tSH3Jc?si=j_8rRZref5Vfa1_D)
 
 ### Slideshows in Quarto
 
+<img src='https://github.com/user-attachments/assets/bed5d636-e6dd-42fc-b126-f4027d181161' width=40%/>
+
 In this video we dive deeper into the slideshow capabilities of Quarto with Python. We adapt the demo slideshow from Quarto documentation to focus on Python based code snippets.
 
-The video can be viewed [here](https://youtu.be/TS0w-tSH3Jc?si=j_8rRZref5Vfa1_D)
+The video can be viewed [here](https://youtu.be/kWnMc0GwX-U?si=TqFNd8RbYw1RlhKa)
 
 I recommend checking out the Quarto Demo [here](https://quarto.org/demo/)
 
